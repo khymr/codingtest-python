@@ -25,7 +25,7 @@ for _ in range(n):
 cnt = 0
 for i in range(n):
     for j in range(m):
-        if(graph[i][j] == 0):
+        if(graph[i][j] == 0):        
             cnt+=1
             dfs(graph, i, j)
 
