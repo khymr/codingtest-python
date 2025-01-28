@@ -13,7 +13,7 @@ while q:
         break
     a = heapq.heappop(q)
     b = heapq.heappop(q)
-    s = a +b
+    s = a + b
     total += s
     heapq.heappush(q, s)
 print(total)
