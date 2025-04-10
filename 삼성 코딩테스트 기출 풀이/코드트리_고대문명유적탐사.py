@@ -24,7 +24,7 @@ def turn_90(g, r, c):
         for j in range(d):
             new_g[r + j][c + d - i-1] = g[r + i][c + j]
     return new_g
-
+    
 
 def dfs(g, i, j,ans, elem): 
     global cnt_for_dfs
