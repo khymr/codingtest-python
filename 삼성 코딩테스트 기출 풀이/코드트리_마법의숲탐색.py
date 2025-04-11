@@ -1,141 +1,222 @@
+# import sys
+# input = sys.stdin.readline
+# from collections import deque
+# R,C,K = map(int, input().split())
+
+# dx =[-1, 0, 1, 0]
+# dy =[0, 1, 0, -1]
+# def correct_idx(x,y):
+#     if(3<=x < R+3 and 0<=y<C):
+#         return True
+#     return False
+# #다운은 남, 서, 동 순으로 
+# #서 이면 d 는 반시계(-1) 동이면 d는 시계 남이면 유지
+
+# def valid_row(idx):
+#     if(0<= idx < R+3):
+#         return True
+#     return False
+# def valid_col(idx):
+#     if(0<= idx < C):
+#         return True
+#     return False
+
+# def valid_south(graph, x, y):
+#     if(valid_row(x) and valid_col(y-1) and valid_row(x+1) and valid_col(y)
+#        and valid_col(y+1)):
+#         if(graph[x][y-1] == 0 and graph[x+1][y] == 0 and graph[x][y+1] == 0):
+#             return True
+#     return False
+
+# def valid_west(graph, x, y):
+#     if(valid_row(x) and valid_col(y) and valid_col(y-1) and valid_row(x-1)
+#        and valid_row(x-2) and valid_row(x+1)):
+#         if(graph[x][y] == 0 and graph[x][y-1] == 0 and graph[x-1][y-1] == 0 and graph[x-2][y] == 0 
+#         and graph[x+1][y] == 0):
+#             return True
+#     return False
+
+
+# def valid_east(graph, x, y):
+#     if(valid_row(x) and valid_col(y) and valid_row(x+1) and valid_col(y+1)
+#        and valid_row(x-1) and valid_row(x-2)):
+#         if(graph[x][y] == 0 and graph[x+1][y] == 0 and graph[x][y+1] == 0 and graph[x-1][y+1] == 0 
+#         and graph[x-2][y] == 0):
+#             return True
+#     return False
+
+
+# def down(graph, x, y, d, id):
+#     while True:
+#         if(valid_south(graph,x+1, y)):
+#             x = x+1
+#         elif(valid_west(graph, x+1, y-1)):
+#             x = x+1
+#             y = y-1
+#             d = (d-1) % 4
+#         elif(valid_east(graph, x+1, y+1)):
+#             x = x+1
+#             y = y+1
+#             d = (d+1) % 4
+#         else:
+#             break
+#     return x, y, d
+
+# def clear_all():
+#     global graph, exit
+#     for i in range(R+3):
+#         for j in range(C):
+#             graph[i][j] = 0 
+#             if(exit[i][j] == True):
+#                 exit[i][j] = False
+    
+# def change_graph(graph, x, y, d, id):
+#     global exit
+#     graph[x][y] = id
+#     for k in range(4):
+#         nx = x + dx[k]
+#         ny = y + dy[k]
+#         graph[nx][ny] = id
+#         if(k == d):
+#             exit[nx][ny] = True
+    
+
+# def move_elf(graph, x, y):
+#     global exit
+#     visit = [[False] * C for _ in range(R+3)]
+#     q = deque()
+#     q.append((x,y))
+#     visit[x][y] = True
+#     max_x = 0
+#     while q:
+#         x,y = q.popleft()
+#         max_x = max(x, max_x)
+#         for k in range(4):
+#             nx = x + dx[k]
+#             ny = y + dy[k]
+#             if(visit[nx][ny]==True):
+#                 continue
+#             if(graph[nx][ny] == graph[x][y] or (graph[nx][ny] > 0 and exit[nx][ny] == True)):
+#                 q.append((nx, ny))
+#                 visit[nx][ny] = True
+#     return max_x -2
+
+# graph = [[0] * (C) for _ in range(R+3)]
+# answer = 0
+# golumn = []
+# for id in range(1,K+1):
+#     ci,d = map(int, input().split())
+# golumn.append((ci-1, d))
+# exit = [[False] * (C) for _ in range(R+3)]
+# id = 0   
+# for g in golumn:
+#     id+=1
+#     ci,d = g
+#     x,y,d = down(graph,0,ci,d,id)
+#     if(not correct_idx(x,y)):
+#         clear_all()
+#     else:
+#         change_graph(graph, x, y, d, id)
+#         answer+= move_elf(graph, x, y) 
+    
+# print(answer)
+
 import sys
 input = sys.stdin.readline
 from collections import deque
 
-r,c,k = map(int, input().split())
-r-=1
-c-=1
-direction_x = [-1,0,0,1]
-direction_y = [0,1,1,0]
+R, C, K = map(int, input().split())
+
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+
+def correct_idx(x, y):
+    return 3 <= x < R + 3 and 0 <= y < C
+
 def valid_row(idx):
-    if(0<= idx < r):
-        return True
-    return False
+    return 0 <= idx < R + 3
+
 def valid_col(idx):
-    if(0<= idx < c):
-        return True
+    return 0 <= idx < C
+
+def valid_south(graph, x, y):
+    if valid_row(x+2) and valid_col(y-1) and valid_col(y+1):
+        if graph[x+1][y-1] == 0 and graph[x+1][y] == 0 and graph[x+1][y+1] == 0 and graph[x+2][y] == 0:
+            return True
     return False
 
-def valid_low(graph, i, j):
-    if(valid_row(i+1) and valid_col(j-1) and valid_col(j+1) and valid_row(i+2)):
-        if(graph[i+1][j-1] == 0 and graph[i+1][j+1] == 0 and graph[i+2][j] == 0):
+def valid_west(graph, x, y):
+    if valid_row(x+2) and valid_col(y-2):
+        if graph[x][y-1] == 0 and graph[x+1][y-1] == 0 and graph[x+2][y-1] == 0 and graph[x+1][y-2] == 0 and graph[x+2][y-2] == 0:
             return True
-        else:
-            return False
-    else:
-        return False
-    
-def valid_west(graph, i, j):
-    if(valid_row(i-1) and valid_col(j-1)and valid_col(j-2) and valid_row(i+1)
-       and valid_row(i+2)):
-        if(graph[i-1][j-1] == 0 and graph[i][j-2] == 0 and graph[i+1][j-2] == 0
-        and graph[i+1][j-1] == 0 and graph[i+2][j-1] == 0):
+    return False
+
+def valid_east(graph, x, y):
+    if valid_row(x+2) and valid_col(y+2):
+        if graph[x][y+1] == 0 and graph[x+1][y+1] == 0 and graph[x+2][y+1] == 0 and graph[x+1][y+2] == 0 and graph[x+2][y+2] == 0:
             return True
+    return False
+
+def down(graph, x, y, d, id):
+    while True:
+        if valid_south(graph, x, y):
+            x += 1
+        elif valid_west(graph, x, y):
+            x, y, d = x + 1, y - 1, (d - 1) % 4
+        elif valid_east(graph, x, y):
+            x, y, d = x + 1, y + 1, (d + 1) % 4
         else:
-            return False
-    else:
-        return False
-
-
-def valid_east(graph, i, j):
-    if(valid_row(i-1) and valid_row(i+1) and valid_row(i+2)
-       and valid_col(j+1) and valid_col(j+2)):
-        
-        if(graph[i-1][j+1] == 0 and graph[i][j+2] == 0 and graph[i+1][j+1] == 0
-        and graph[i+1][j+2] == 0 and graph[i+2][j+1] == 0):
-            return True
-        else:
-            return False
-    else:
-        return False
-
-def make_west_dir(d):
-    d-=1
-    if(d < 0):
-        d += 4
-    return d
-def make_east_dir(d):
-    d+=1
-    if(d > 3):
-        d-=4
-    return d
-def change_graph(graph, x, y, dir):
-    graph[x][y] = 3#center는 3으로 처리
-    for k in range(4):
-        nx = x + direction_x[k]
-        ny = y + direction_y[k]
-        if(k == dir):
-            graph[nx][ny] = 2 # 출구 차별화 처리
-        else:
-            graph[nx][ny] = 1
-    
-
-def bfs(graph, c, d):
-    global tot_cnt
-    x,y = 0,c
-    q = deque()
-    visit = [[False] * c for _ in range(r)]
-    q.append((x,y,d))
-    visit[x][y] = True
-    gOrStop = 0
-    while q:
-        
-        x,y,d = q.popleft()
-        if(valid_low(graph, x, y)):
-            q.append((x+1,y,d))
-            continue
-        if(valid_west(graph, x, y)):
-            q.append((x+1, y-1, make_west_dir(d)))
-            continue
-        if(valid_east(graph, x, y)):
-            q.append((x+1, y+1, make_east_dir(d)))
-        if(x < 0):
-            gOrStop = 1
             break
-    if(gOrStop == 1):
-        graph = [[0] * c for _ in range(r)]  # 격자 초기화
-        return False
+    return x, y, d
 
+def clear_all():
+    global graph, exits
+    for i in range(R+3):
+        for j in range(C):
+            graph[i][j] = 0
+            exits[i][j] = False
 
-    change_graph(graph, x,y, d)
-    if(x == r-1):
-        tot_cnt+=(x+2)
-    else:
-        
+def change_graph(graph, x, y, d, id):
+    global exits
+    graph[x][y] = id
+    for k in range(4):
+        nx, ny = x + dx[k], y + dy[k]
+        if valid_row(nx) and valid_col(ny):
+            graph[nx][ny] = id
+    exits[x + dx[d]][y + dy[d]] = True
+
+def move_elf(graph, x, y):
+    global exits
+    visit = [[False] * C for _ in range(R+3)]
+    q = deque([(x, y)])
+    visit[x][y] = True
+    max_x = x
+    while q:
+        x, y = q.popleft()
+        max_x = max(max_x, x)
         for k in range(4):
-            nx = x + direction_x[k]
-            ny = y + direction_y[k]
-            if(graph[nx][ny] == 2):
-                max_x = -1
-                for kk in range(4):
-                    kx = nx + direction_x[kk]
-                    ky = ny + direction_y[kk]
-                    if(0<= kx < r and 0<= ky < c):
-                        if(graph[kx][ky] == 3 and kx,ky != x,y):
-                            if(max_x < kx):
-                                max_x = kx
-                               
-                break  
-        tot_cnt+= (max_x + 2)        
+            nx, ny = x + dx[k], y + dy[k]
+            if not valid_row(nx) or not valid_col(ny) or visit[nx][ny]:
+                continue
+            if graph[nx][ny] == graph[x][y] or (graph[nx][ny] > 0 and exits[x][y]):
+                q.append((nx, ny))
+                visit[nx][ny] = True
+    return max_x - 2
 
-    return True
-    
+graph = [[0] * C for _ in range(R+3)]
+exits = [[False] * C for _ in range(R+3)]
+answer = 0
 
+for id in range(1, K+1):
+    ci, d = map(int, input().split())
+    ci -= 1
+    x, y, d = down(graph, 0, ci, d, id)
+    if not correct_idx(x, y):
+        clear_all()
+        continue
+    change_graph(graph, x, y, d, id)
+    answer += move_elf(graph, x, y)
 
-
-tot_cnt = 0
-golumm = []
-for _ in range(k):
-    c,d = map(int, input().split())
-    golumm.append((c-1, d))
-graph = [[0] * c for _ in range(r)]
-for g in golumm:
-    c,d = g
-    bool = bfs(graph, c,d)
-    if(bool == False):
-        bfs(graph, c,d)
-        
-
-
+print(answer)
 
 
